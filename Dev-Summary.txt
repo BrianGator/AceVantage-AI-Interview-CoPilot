@@ -1,0 +1,33 @@
+# Dev-Summary: AceVantage Interview Pilot
+
+## Application Overview
+AceVantage is a full-featured AI-powered recruitment assistant and interview companion. It bridges the gap between preparation and performance by providing real-time technical guidance, mock interview environments, and automated document generation.
+
+## File Structure & Responsibilities
+- **index.html**: The application entry point. Contains the root div and standard HTML5 boilerplate.
+- **src/main.tsx**: Initializes the React 19 application and attaches it to the DOM.
+- **src/App.tsx**: The core engine of the application. Manages state for transcription, navigation, user data, and the multi-tab interface (Live Pilot, AI Mock, Web Test, Docs, Analytics, Profile). High-complexity logic for session management and UI layout reside here.
+- **src/types.ts**: Defines the strict TypeScript interfaces and types used throughout the app, ensuring type safety for User Profiles, Messages, and Sessions.
+- **src/lib/gemini.ts**: The AI service layer. Proxies prompts to the Google Gemini 3.1 Pro model to generate interview answers, analyze performance, and solve technical assessment questions.
+- **src/index.css**: Global stylesheet utilizing Tailwind CSS 4 for utility-first styling and theme definitions.
+- **package.json**: External dependency manifest. Configures the build system and scripts.
+- **.env.example**: Template for environment variables (GEMINI_API_KEY).
+
+## Technologies Used
+- **React 19**: Modern frontend library for building reactive interfaces.
+- **Vite**: Ultra-fast build tool and development server.
+- **Tailwind CSS 4**: A utility-first CSS framework for rapid UI development and consistent design tokens.
+- **Google Gemini 3.1 Pro / 1.5 Flash**: State-of-the-art Generative AI models for natural language understanding and logical reasoning.
+- **Lucide React**: Vector icon library for intuitive navigation cues.
+- **Motion (motion/react)**: Declarative animation library for fluid route transitions and interactive feedback.
+- **Recharts / D3**: Data visualization libraries for generating performance heatmaps and readiness trends.
+- **PDF.js**: JavaScript library for client-side PDF parsing (Resume data extraction).
+- **Web Speech API**: Real-time voice-to-text transcription engine.
+
+## Programming Concepts
+- **Component-Based Architecture**: Modular UI design for maintainability.
+- **State Management (Hooks)**: Use of `useState`, `useEffect`, `useRef`, and `useMemo` for highly dynamic data flows.
+- **Async/Await Pattern**: Non-blocking API calls to AI backends and file parsers.
+- **Responsive Web Design**: Fluid layouts that adapt to desktop and mobile viewports.
+- **Conditional Rendering**: Dynamic UI switching based on active application states and authentication presence.
+- **Service Layer Pattern**: Decoupling AI logic from the presentation layer for better testing and scalability.

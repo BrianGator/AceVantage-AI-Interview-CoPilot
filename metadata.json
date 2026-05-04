@@ -1,0 +1,8 @@
+{
+  "name": "AceVantage: AI Interview CoPilot",
+  "description": "An intelligent interview companion providing real-time transcription, tailored AI responses based on your resume/LinkedIn, and performance analytics.",
+  "requestFramePermissions": [
+    "microphone"
+  ],
+  "majorCapabilities": []
+}

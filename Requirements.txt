@@ -1,0 +1,32 @@
+# Project Requirements: AceVantage Interview Pilot
+
+## Original Concept Request
+"Build AceVantage: A comprehensive AI Interview Pilot and Preparation Suite designed specifically for professionals. It should help users ace interviews through real-time pilots, mock sessions, and technical task simulations."
+
+## Core Functional Requirements
+
+### 1. LIVE INTERVIEW PILOT
+- **Live Transcription**: Must listen to microphone input and display real-time text.
+- **Context-Aware Answers**: Generate suggested answers based on the user's uploaded Resume or LinkedIn profile.
+- **Stealth UI**: Capability to run in a discrete mode (translucent/overlay) for use during live calls.
+
+### 2. AI MOCK INTERVIEW
+- **Conversational Practice**: AI must act as an interviewer, asking roles-specific questions.
+- **Real-time Feedback**: Provide tips and grade responses during the session.
+
+### 3. WEB ASSESSMENT PILOT (TASKS)
+- **Problem Solving**: Solve multiple-choice and text-based technical questions.
+- **Code Assistance**: Provide boilerplate or logic for coding assessments in real-time.
+
+### 4. CONTENT STUDIO (DOCS)
+- **Resume Improvement**: Analyze existing resumes and provide 5+ actionable items.
+- **Cover Letter Generation**: Create tailored letters based on specific Job Descriptions.
+
+### 5. ANALYTICS & INSIGHTS
+- **Skill Mastery**: Heatmaps for technical and soft skills.
+- **Readiness Grading**: Provide an overall "Current Grade" (e.g., A-) for role fit.
+
+## Non-Functional Requirements
+- **Privacy & Security**: API keys must be kept secure (environment variables).
+- **Performance**: High-speed AI responses with minimal latency.
+- **Aesthetic**: Modern, "dark-mode" technical interface using high-quality typography.
