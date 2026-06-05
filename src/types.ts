@@ -33,6 +33,17 @@ export type Answer = {
   tags?: string[];
 };
 
+export type InterviewProfile = {
+  id: string;
+  name: string;
+  resumeText: string;
+  companyName: string;
+  companyDescription: string;
+  position: string;
+  jobDescription: string;
+  createdAt: number;
+};
+
 export type UserProfile = {
   linkedInUrl: string;
   resumeText: string;
