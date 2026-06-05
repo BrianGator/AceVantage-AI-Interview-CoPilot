@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Save,
   Send,
@@ -9,40 +9,63 @@ import {
   User,
   Briefcase,
   FileText,
+  Upload,
 } from "lucide-react";
 import { cn } from "../lib/utils";
+import { parseDocument } from "../types";
 
 export const JobApply = () => {
   const [activeSection, setActiveSection] = useState<"intake" | "assistant">(
     "intake",
   );
 
+  // Load from local storage initially
+  const loadSavedData = (key: string, defaultValue: any) => {
+    try {
+      const saved = localStorage.getItem(key);
+      return saved ? JSON.parse(saved) : defaultValue;
+    } catch {
+      return defaultValue;
+    }
+  };
+
   // Intake State
-  const [personalDetails, setPersonalDetails] = useState({
+  const [personalDetails, setPersonalDetails] = useState(() => loadSavedData("jobApply_personalDetails", {
     fullName: "",
     email: "",
     phone: "",
-    address: "",
-  });
-  const [demographics, setDemographics] = useState({
+    city: "",
+    state: "",
+  }));
+  
+  const [demographics, setDemographics] = useState(() => loadSavedData("jobApply_demographics", {
     sex: "",
     race: "",
     usCitizen: "Yes",
     veteran: "No",
-  });
-  const [links, setLinks] = useState({ linkedin: "", portfolio: "" });
-  const [salary, setSalary] = useState("");
-  const [education, setEducation] = useState({
+    disability: "No",
+  }));
+  
+  const [preferences, setPreferences] = useState(() => loadSavedData("jobApply_preferences", {
+    relocate: "Yes",
+    workModel: "Remote",
+    hybridDistance: "30 min from Tampa",
+  }));
+  
+  const [links, setLinks] = useState(() => loadSavedData("jobApply_links", { linkedin: "", portfolio: "" }));
+  const [salary, setSalary] = useState(() => loadSavedData("jobApply_salary", ""));
+  const [education, setEducation] = useState(() => loadSavedData("jobApply_education", {
     degree: "",
     institution: "",
     year: "",
-  });
-  const [jobTitles, setJobTitles] = useState("");
-
-  const [employers, setEmployers] = useState([
+  }));
+  const [jobTitles, setJobTitles] = useState(() => loadSavedData("jobApply_jobTitles", ""));
+  
+  const [employers, setEmployers] = useState(() => loadSavedData("jobApply_employers", [
     { company: "", title: "", dates: "", manager: "", reason: "" },
-  ]);
-  const [resumeData, setResumeData] = useState("");
+  ]));
+  const [resumeData, setResumeData] = useState(() => loadSavedData("jobApply_resumeData", ""));
+  const [frequentQuestions, setFrequentQuestions] = useState(() => loadSavedData("jobApply_frequentQuestions", ""));
   const [dataSaved, setDataSaved] = useState(false);
 
   // Assistant State
@@ -56,6 +79,33 @@ export const JobApply = () => {
     },
   ]);
   const [inputQuery, setInputQuery] = useState("");
+
+  useEffect(() => {
+    if (dataSaved) {
+        localStorage.setItem("jobApply_personalDetails", JSON.stringify(personalDetails));
+        localStorage.setItem("jobApply_demographics", JSON.stringify(demographics));
+        localStorage.setItem("jobApply_preferences", JSON.stringify(preferences));
+        localStorage.setItem("jobApply_links", JSON.stringify(links));
+        localStorage.setItem("jobApply_salary", JSON.stringify(salary));
+        localStorage.setItem("jobApply_education", JSON.stringify(education));
+        localStorage.setItem("jobApply_jobTitles", JSON.stringify(jobTitles));
+        localStorage.setItem("jobApply_employers", JSON.stringify(employers));
+        localStorage.setItem("jobApply_resumeData", JSON.stringify(resumeData));
+        localStorage.setItem("jobApply_frequentQuestions", JSON.stringify(frequentQuestions));
+    }
+  }, [dataSaved, personalDetails, demographics, preferences, links, salary, education, jobTitles, employers, resumeData, frequentQuestions]);
+
+  const handleResumeUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      try {
+        const text = await parseDocument(file);
+        setResumeData(text);
+      } catch (err) {
+        console.error("Failed to parse document", err);
+      }
+    }
+  };
 
   const addEmployer = () => {
     if (employers.length < 4) {
@@ -189,18 +239,32 @@ export const JobApply = () => {
                   }
                   className="input-field w-full"
                 />
-                <input
-                  type="text"
-                  placeholder="Address"
-                  value={personalDetails.address}
-                  onChange={(e) =>
-                    setPersonalDetails({
-                      ...personalDetails,
-                      address: e.target.value,
-                    })
-                  }
-                  className="input-field w-full"
-                />
+                <div className="grid grid-cols-2 gap-4">
+                  <input
+                    type="text"
+                    placeholder="City"
+                    value={personalDetails.city}
+                    onChange={(e) =>
+                      setPersonalDetails({
+                        ...personalDetails,
+                        city: e.target.value,
+                      })
+                    }
+                    className="input-field w-full"
+                  />
+                  <input
+                    type="text"
+                    placeholder="State"
+                    value={personalDetails.state}
+                    onChange={(e) =>
+                      setPersonalDetails({
+                        ...personalDetails,
+                        state: e.target.value,
+                      })
+                    }
+                    className="input-field w-full"
+                  />
+                </div>
                 <input
                   type="text"
                   placeholder="Desired Salary"
@@ -223,29 +287,37 @@ export const JobApply = () => {
                   Demographics & Links
                 </h3>
                 <div className="grid grid-cols-2 gap-4">
-                  <input
-                    type="text"
-                    placeholder="Sex"
+                  <select
                     value={demographics.sex}
                     onChange={(e) =>
                       setDemographics({ ...demographics, sex: e.target.value })
                     }
                     className="input-field w-full"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Race"
+                  >
+                    <option value="">Select Sex</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                    <option value="Decline to answer">Decline to answer</option>
+                  </select>
+                  <select
                     value={demographics.race}
                     onChange={(e) =>
                       setDemographics({ ...demographics, race: e.target.value })
                     }
                     className="input-field w-full"
-                  />
+                  >
+                    <option value="">Select Race</option>
+                    <option value="Asian">Asian</option>
+                    <option value="Black">Black</option>
+                    <option value="White">White</option>
+                    <option value="Hispanic">Hispanic</option>
+                    <option value="Other">Other</option>
+                    <option value="Decline to answer">Decline to answer</option>
+                  </select>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <input
-                    type="text"
-                    placeholder="US Citizen (Yes/No)"
+                <div className="grid grid-cols-3 gap-4">
+                  <select
                     value={demographics.usCitizen}
                     onChange={(e) =>
                       setDemographics({
@@ -253,11 +325,13 @@ export const JobApply = () => {
                         usCitizen: e.target.value,
                       })
                     }
-                    className="input-field w-full"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Veteran (Yes/No)"
+                    className="input-field w-full text-xs"
+                  >
+                    <option value="">US Citizen?</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                  </select>
+                  <select
                     value={demographics.veteran}
                     onChange={(e) =>
                       setDemographics({
@@ -265,8 +339,75 @@ export const JobApply = () => {
                         veteran: e.target.value,
                       })
                     }
-                    className="input-field w-full"
-                  />
+                    className="input-field w-full text-xs"
+                  >
+                    <option value="">Veteran?</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                    <option value="Decline to answer">Decline to answer</option>
+                  </select>
+                  <select
+                    value={demographics.disability}
+                    onChange={(e) =>
+                      setDemographics({
+                        ...demographics,
+                        disability: e.target.value,
+                      })
+                    }
+                    className="input-field w-full text-xs"
+                  >
+                    <option value="">Disability?</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                    <option value="Decline to answer">Decline to answer</option>
+                  </select>
+                </div>
+                
+                <div className="space-y-4 pt-4 border-t border-neutral-800">
+                  <h4 className="text-sm font-bold text-neutral-400">Preferences</h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    <select
+                      value={preferences.relocate}
+                      onChange={(e) =>
+                        setPreferences({ ...preferences, relocate: e.target.value })
+                      }
+                      className="input-field w-full text-xs"
+                    >
+                      <option value="">Open to Relocate?</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </select>
+                    {preferences.relocate === "No" && (
+                      <select
+                        value={preferences.workModel}
+                        onChange={(e) =>
+                          setPreferences({ ...preferences, workModel: e.target.value })
+                        }
+                        className="input-field w-full text-xs"
+                      >
+                        <option value="">Work Model</option>
+                        <option value="Remote">Remote</option>
+                        <option value="Hybrid (in Tampa area only)">Hybrid (in Tampa area only)</option>
+                        <option value="Onsite (in Tampa area only)">Onsite (in Tampa area only)</option>
+                      </select>
+                    )}
+                  </div>
+                  {preferences.relocate === "No" && preferences.workModel === "Hybrid (in Tampa area only)" && (
+                    <select
+                      value={preferences.hybridDistance}
+                      onChange={(e) =>
+                        setPreferences({ ...preferences, hybridDistance: e.target.value })
+                      }
+                      className="input-field w-full text-xs"
+                    >
+                      <option value="">Commute Distance</option>
+                      <option value="30 min from Tampa">30 min from Tampa</option>
+                      <option value="60 min from Tampa">60 min from Tampa</option>
+                      <option value="90 min from Tampa">90 min from Tampa</option>
+                      <option value="120 min from Tampa">120 min from Tampa</option>
+                      <option value="150 min from Tampa">150 min from Tampa</option>
+                    </select>
+                  )}
                 </div>
                 <input
                   type="text"
@@ -402,10 +543,28 @@ export const JobApply = () => {
                   className="input-field w-full"
                 />
               </div>
+              <div className="pt-2">
+                <label className="glass-button w-full flex items-center justify-center p-4 cursor-pointer gap-2 border border-dashed border-neutral-700 hover:border-neutral-500">
+                  <Upload size={18} /> Upload Resume (Extract Data)
+                  <input type="file" accept=".pdf,.docx,text/plain" onChange={(e) => { handleResumeUpload(e); alert("Resume processed and text extracted."); }} className="hidden" />
+                </label>
+              </div>
               <textarea
-                placeholder="Paste clean plain text resume data here..."
+                placeholder="Extracted plain text resume data will appear here..."
                 value={resumeData}
                 onChange={(e) => setResumeData(e.target.value)}
+                className="input-field w-full h-32 resize-none font-mono text-sm leading-relaxed"
+              />
+            </div>
+
+            <div className="border-t border-neutral-800 pt-8 space-y-4">
+              <h3 className="text-lg font-bold flex items-center gap-2">
+                <CheckSquare size={18} className="text-cyan-400" /> Frequent Questions
+              </h3>
+              <textarea
+                placeholder="List frequent questions you get in apps (e.g. 'What are your salary expectations?') and your standard answers..."
+                value={frequentQuestions}
+                onChange={(e) => setFrequentQuestions(e.target.value)}
                 className="input-field w-full h-32 resize-none font-mono text-sm leading-relaxed"
               />
             </div>
