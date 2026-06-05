@@ -1,4 +1,4 @@
-# AceVantage: AI Interview Pilot
+# AceVantage: AI Career CoPilot
 
 AceVantage is your personal technical co-pilot for the modern job market. From real-time interview assistance to automated document crafting, it provides everything you need to secure your next role.
 
